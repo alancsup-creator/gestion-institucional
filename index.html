@@ -80,7 +80,7 @@
     .metric-card .num { font-size: 20px; font-weight: bold; color: var(--primary); }
     .metric-card .label { font-size: 11px; color: #64748b; }
 
-    /* Estilos Específicos Gestor de Paro */
+    /* Estilos Optimizados para el Gestor de Paro */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .stat-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 10px; border-radius: 8px; text-align: center; }
     .stat-box .num { font-size: 18px; font-weight: bold; color: var(--primary); }
@@ -90,15 +90,20 @@
     .tab-btn { flex: 1; padding: 10px; border: 1px solid var(--accent); background: transparent; color: var(--accent); border-radius: 8px; font-weight: bold; cursor: pointer; }
     .tab-btn.active { background: var(--accent); color: white; }
     .grupo-cargo-header { background: #e5e7eb; color: #374151; font-weight: bold; font-size: 12px; padding: 6px 10px; border-radius: 6px; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; }
-    .docente-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f3f4f6; gap: 10px; }
+    
+    /* Fila compacta y mejor alineada */
+   .docente-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); gap: 10px; }
     .docente-info { flex: 1; min-width: 0; }
-    .docente-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .docente-sc { font-size: 11px; color: #6b7280; }
+    .docente-name { font-weight: 600; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .docente-sc { font-size: 11px; color: #64748b; }
+    
     .checks-container { display: flex; gap: 15px; align-items: center; }
     .check-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #4b5563; font-weight: bold; }
     .check-item input { width: 18px; height: 18px; margin-bottom: 2px; cursor: pointer; }
+    
     .select-item { display: flex; flex-direction: column; font-size: 10px; color: #4b5563; font-weight: bold; }
-    .select-item select { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; margin-top: 2px; background: #fff; outline: none; }
+    .select-item select { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; margin-top: 2px; outline: none; background: #fff; color: var(--text); }
+    
     .dias-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
     .dias-checkboxes label { font-size: 12px; font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 3px; }
 
@@ -375,10 +380,15 @@
           <label>Cargo:</label>
           <select id="decCargo" required>
             <option value="MG">MG</option>
+            <option value="MB">MB</option>
             <option value="ZP">ZP</option>
             <option value="MUP">MUP</option>
+            <option value="MTP">MTP</option>
+            <option value="MPP">MPP</option>
             <option value="AI">AI</option>
-            <option value="EOE">EOE</option>
+            <option value="OE">OE</option>
+            <option value="OS">OS</option>
+            <option value="OA">OA</option>
           </select>
         </div>
         <div class="form-group">
@@ -468,64 +478,66 @@
     </div>
   </section>
 
-  <!-- MÓDULO 7: GESTOR DE PARO INTEGRADO (CON FUNCIONALIDAD COMPLETA) -->
+  <!-- MÓDULO 7: GESTOR DE PARO INTEGRADO -->
   <section id="gestor-paro" class="tab-content">
-    <h2>✊ Gestor de Paro Docente (Control Nominal Diario)</h2>
-    
-    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
-      <div class="form-group">
-        <label>Fecha de Control:</label>
-        <input type="date" id="fechaParo" onchange="inicializarDiaParo()">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <h2>✊ Gestor de Paro Docente (Control Nominal Diario)</h2>
+      
+      <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+        <div class="form-group">
+          <label>Fecha de Control:</label>
+          <input type="date" id="fechaParo" onchange="inicializarDiaParo()">
+        </div>
+        <button class="btn btn-success" onclick="inicializarDiaParo()">Cargar / Ver Día</button>
       </div>
-      <button class="btn btn-success" onclick="inicializarDiaParo()">Cargar / Ver Día</button>
-    </div>
 
-    <!-- Resultados Estadísticos Paro -->
-    <div id="cardResultadosParo" style="margin-bottom: 15px;">
-      <p style="font-size: 13px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #ddd; padding-bottom: 3px;">DOCENTES</p>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="num" id="pctManana">0%</div>
-          <div class="cant" id="cantManana">(0 de 0)</div>
-          <div class="label">Turno Mañana</div>
+      <!-- Resultados Estadísticos Paro -->
+      <div id="cardResultadosParo" style="margin-bottom: 15px;">
+        <p style="font-size: 13px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #ddd; padding-bottom: 3px;">DOCENTES</p>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="num" id="pctManana">0%</div>
+            <div class="cant" id="cantManana">(0 de 0)</div>
+            <div class="label">Turno Mañana</div>
+          </div>
+          <div class="stat-box">
+            <div class="num" id="pctTarde">0%</div>
+            <div class="cant" id="cantTarde">(0 de 0)</div>
+            <div class="label">Turno Tarde</div>
+          </div>
         </div>
-        <div class="stat-box">
-          <div class="num" id="pctTarde">0%</div>
-          <div class="cant" id="cantTarde">(0 de 0)</div>
-          <div class="label">Turno Tarde</div>
+        <p style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 1px solid #ddd; padding-bottom: 3px; margin-top: 15px;">AUXILIARES</p>
+        <div class="stats-grid">
+          <div class="stat-box" style="background: #ecfdf5; border-left-color: #10b981;">
+            <div class="num" id="pctAuxManana" style="color: #047857;">0%</div>
+            <div class="cant" id="cantAuxManana" style="color: #047857;">(0 de 0)</div>
+            <div class="label">Turno Mañana</div>
+          </div>
+          <div class="stat-box" style="background: #ecfdf5; border-left-color: #10b981;">
+            <div class="num" id="pctAuxTarde" style="color: #047857;">0%</div>
+            <div class="cant" id="cantAuxTarde" style="color: #047857;">(0 de 0)</div>
+            <div class="label">Turno Tarde</div>
+          </div>
         </div>
       </div>
-      <p style="font-size: 13px; font-weight: bold; color: #10b981; border-bottom: 1px solid #ddd; padding-bottom: 3px; margin-top: 15px;">AUXILIARES</p>
-      <div class="stats-grid">
-        <div class="stat-box" style="background: #ecfdf5; border-left-color: #10b981;">
-          <div class="num" id="pctAuxManana" style="color: #047857;">0%</div>
-          <div class="cant" id="cantAuxManana" style="color: #047857;">(0 de 0)</div>
-          <div class="label">Turno Mañana</div>
-        </div>
-        <div class="stat-box" style="background: #ecfdf5; border-left-color: #10b981;">
-          <div class="num" id="pctAuxTarde" style="color: #047857;">0%</div>
-          <div class="cant" id="cantAuxTarde" style="color: #047857;">(0 de 0)</div>
-          <div class="label">Turno Tarde</div>
-        </div>
+
+      <div class="turno-selector" style="margin-top: 15px;">
+        <button id="btnM" class="tab-btn active" onclick="cambiarTurnoParo('Mañana')">Turno Mañana</button>
+        <button id="btnT" class="tab-btn" onclick="cambiarTurnoParo('Tarde')">Turno Tarde</button>
       </div>
-    </div>
 
-    <div class="turno-selector" style="margin-top: 15px;">
-      <button id="btnM" class="tab-btn active" onclick="cambiarTurnoParo('Mañana')">Turno Mañana</button>
-      <button id="btnT" class="tab-btn" onclick="cambiarTurnoParo('Tarde')">Turno Tarde</button>
-    </div>
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-warning" style="flex: 1;" onclick="marcarAsistenciaObligatoria()">⚡ Forzar Todo el Turno</button>
+        <button class="btn btn-danger" style="flex: 1;" onclick="desmarcarAsistenciaTurno()">❌ Desmarcar Todo</button>
+      </div>
 
-    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-      <button class="btn btn-warning" style="flex: 1;" onclick="marcarAsistenciaObligatoria()">⚡ Forzar Todo el Turno</button>
-      <button class="btn btn-danger" style="flex: 1;" onclick="desmarcarAsistenciaTurno()">❌ Desmarcar Todo</button>
-    </div>
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-success" style="flex: 1;" onclick="guardarAsistenciaDia()">💾 Guardar Registro en la Nube</button>
+        <button class="btn" style="flex: 1; background: #047857;" onclick="exportarExcelDia()">📤 Exportar a CSV</button>
+      </div>
 
-    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-      <button class="btn btn-success" style="flex: 1;" onclick="guardarAsistenciaDia()">💾 Guardar Registro en la Nube</button>
-      <button class="btn" style="flex: 1; background: #047857;" onclick="exportarExcelDia()">📤 Exportar a CSV</button>
+      <div id="listaDocentesParo"></div>
     </div>
-
-    <div id="listaDocentesParo"></div>
   </section>
 
   <!-- MÓDULO 8: PLANTEL DE PERSONAL -->
@@ -1104,7 +1116,7 @@
           <div class="docente-row">
             <div class="docente-info">
               <div class="docente-name">${d.nombre}</div>
-              <div class="docente-sc">${d.cargo}</div>
+              <div class="docente-sc">${d.escuela || "EP 7"} - ${d.cargo}</div>
             </div>
             <div class="checks-container">
               <div class="check-item">
@@ -1114,7 +1126,7 @@
               <div class="select-item">
                 <label>Postura</label>
                 <select onchange="registrosParoDia['${fecha}'].find(x=>x.id===${d.id}).estado=this.value; calcularPorcentajesParo();">
-                  <option value="Sin responder" ${d.estado==='Sin responder'?'selected':''}>⏳ No contestó</option>
+                  <option value="Sin responder" ${d.estado==='Sin responder'?'selected':''}>⏳ No contestó aún</option>
                   <option value="Adhiere" ${d.estado==='Adhiere'?'selected':''}>✊ Adhiere</option>
                   <option value="No adhiere" ${d.estado==='No adhiere'?'selected':''}>✅ No adhiere</option>
                 </select>
