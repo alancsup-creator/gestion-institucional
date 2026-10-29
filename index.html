@@ -130,7 +130,7 @@
     <li class="nav-item" onclick="switchTab('orientaciones')">💡 Orientaciones de Visita</li>
     <li class="nav-item" onclick="switchTab('coberturas')">🔄 Cobertura de Salones</li>
     <li class="nav-item" onclick="switchTab('horarios')">📅 Gestión de Horarios</li>
-    <li class="nav-item" onclick="switchTab('decreto900')">📜 Decreto 900 (Orden de Mérito)</li>
+    <li class="nav-item" onclick="switchTab('decreto900')">📜 Decreto 900</li>
     <li class="nav-item" onclick="switchTab('cupof')">📋 CUPOF Docente</li>
     <li class="nav-item" onclick="switchTab('licencias')">🏥 Licencias y Suplentes</li>
     <li class="nav-item" onclick="switchTab('gestor-paro')">✊ Gestor de Paro</li>
@@ -352,7 +352,7 @@
 
   <!-- MÓDULO 5: DECRETO 900 -->
   <section id="decreto900" class="tab-content">
-    <h2>📜 Decreto 900 - Orden de Mérito</h2>
+    <h2>📜 Decreto 900</h2>
     <form id="formDecreto900" onsubmit="guardarDocenteDecreto(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
       <div class="grid-3">
         <div class="form-group">
@@ -388,7 +388,7 @@
           <input type="text" id="decTelefono" required placeholder="2342-123456">
         </div>
       </div>
-      <button type="submit" class="btn btn-success">+ Cargar al Orden de Mérito</button>
+      <button type="submit" class="btn btn-success">+ Cargar al Decreto 900</button>
     </form>
     <div class="table-responsive">
       <table>
@@ -1037,7 +1037,7 @@
     });
     guardarColeccionFirebase("decreto900", decreto900List);
     renderizarDecreto900();
-    alert("✅ Docente agregado al orden de mérito.");
+    alert("✅ Docente agregado al decreto 900.");
   }
 
   function renderizarDecreto900() {
