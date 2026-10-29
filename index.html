@@ -7,7 +7,7 @@
   <title>Sistema de Gestión Institucional - EP N° 7</title>
 
   <!-- PWA Manifest dinámico -->
-  <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"Gestión Institucional EP7\",\"short_name\":\"Gestión EP7\",\"start_url\":\".\",\"display\":\"standalone\",\"background_color\":\"#1e3a8a\",\"theme_color\":\"#1e3a8a\",\"icons\":[{\"src\":\"https://cdn-icons-png.flaticon.com/512/2910/2910768.png\",\"sizes\":\"512x512\",\"type\":\"image/png\"}]}">
+  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Gestión Institucional EP7","short_name":"Gestión EP7","start_url":".","display":"standalone","background_color":"#1e3a8a","theme_color":"#1e3a8a","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/2910/2910768.png","sizes":"512x512","type":"image/png"}]}'>
 
   <!-- Firebase Web SDK (Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -80,7 +80,8 @@
     .metric-card .num { font-size: 20px; font-weight: bold; color: var(--primary); }
     .metric-card .label { font-size: 11px; color: #64748b; }
 
-    /* Estilos Optimizados para el Gestor de Paro */
+    /* Estilos Gestor de Paro (Compacto y centrado) */
+    .paro-wrapper { max-width: 650px; margin: 0 auto; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
     .stat-box { background: #eff6ff; border-left: 4px solid var(--accent); padding: 10px; border-radius: 8px; text-align: center; }
     .stat-box .num { font-size: 18px; font-weight: bold; color: var(--primary); }
@@ -91,8 +92,7 @@
     .tab-btn.active { background: var(--accent); color: white; }
     .grupo-cargo-header { background: #e5e7eb; color: #374151; font-weight: bold; font-size: 12px; padding: 6px 10px; border-radius: 6px; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; }
     
-    /* Fila compacta y mejor alineada */
-   .docente-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); gap: 10px; }
+    .docente-row { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); gap: 10px; background: #fff; border-radius: 6px; margin-bottom: 6px; }
     .docente-info { flex: 1; min-width: 0; }
     .docente-name { font-weight: 600; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .docente-sc { font-size: 11px; color: #64748b; }
@@ -100,10 +100,8 @@
     .checks-container { display: flex; gap: 15px; align-items: center; }
     .check-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #4b5563; font-weight: bold; }
     .check-item input { width: 18px; height: 18px; margin-bottom: 2px; cursor: pointer; }
-    
     .select-item { display: flex; flex-direction: column; font-size: 10px; color: #4b5563; font-weight: bold; }
     .select-item select { padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; margin-top: 2px; outline: none; background: #fff; color: var(--text); }
-    
     .dias-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
     .dias-checkboxes label { font-size: 12px; font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 3px; }
 
@@ -133,6 +131,7 @@
     <li class="nav-item" onclick="switchTab('coberturas')">🔄 Cobertura de Salones</li>
     <li class="nav-item" onclick="switchTab('horarios')">📅 Gestión de Horarios</li>
     <li class="nav-item" onclick="switchTab('decreto900')">📜 Decreto 900 (Orden de Mérito)</li>
+    <li class="nav-item" onclick="switchTab('cupof')">📋 CUPOF Docente</li>
     <li class="nav-item" onclick="switchTab('licencias')">🏥 Licencias y Suplentes</li>
     <li class="nav-item" onclick="switchTab('gestor-paro')">✊ Gestor de Paro</li>
     <li class="nav-item" onclick="switchTab('plantel-personal')">⚙️ Plantel de Personal</li>
@@ -149,7 +148,6 @@
   <!-- MÓDULO 1: OBSERVACIONES DE CLASES -->
   <section id="observaciones" class="tab-content active">
     <h2>👁️ Registro y Porcentajes de Clases Observadas</h2>
-    
     <form id="formObservacion" onsubmit="guardarObservacion(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
       <div class="grid-3">
         <div class="form-group">
@@ -176,7 +174,6 @@
           </select>
         </div>
       </div>
-
       <div class="grid-2">
         <div class="form-group">
           <label>Docente Observado/a:</label>
@@ -231,40 +228,14 @@
   <!-- MÓDULO 2: ORIENTACIONES Y SUGERENCIAS -->
   <section id="orientaciones" class="tab-content">
     <h2>💡 Guía y Orientaciones Inteligentes para la Visita de Aula</h2>
-    
-    <!-- Panel Dinámico de Sugerencias Basado en Porcentajes -->
     <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
       <h3 style="color: #1e3a8a; font-size: 15px; margin-bottom: 8px;">🎯 Sugerencias Automáticas según Cobertura Actual</h3>
-      <p style="font-size: 13px; color: #475569; margin-bottom: 12px;">El sistema analiza las observaciones registradas y recomienda prioridades:</p>
       <div id="contenedorSugerenciasDinamicas" style="display: flex; flex-direction: column; gap: 8px;">
-        <!-- Se puebla dinámicamente con JavaScript -->
         <span style="font-size: 13px; color: #64748b;">Cargando sugerencias institucionales...</span>
       </div>
     </div>
-
-    <div class="grid-2">
-      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #166534; font-size: 15px; margin-bottom: 8px;">📌 Aspectos Didácticos e Inicio</h3>
-        <ul style="font-size: 13px; padding-left: 18px; line-height: 1.6;">
-          <li>Coherencia entre la planificación anual/secuencia y la clase supervisada.</li>
-          <li>Claridad en la presentación del propósito pedagógico a los alumnos.</li>
-          <li>Intervenciones docentes que acerquen e interpelen el contenido a los estudiantes.</li>
-          <li>Uso del pizarrón, organización del aula y gestión del tiempo lectivo.</li>
-          <li>Diversificación de la propuesta.</li>
-        </ul>
-      </div>
-
-      <div style="background: #fefce8; border: 1px solid #fef08a; padding: 15px; border-radius: 8px;">
-        <h3 style="color: #854d0e; font-size: 15px; margin-bottom: 8px;">🤝 Gestión del Clima</h3>
-        <ul style="font-size: 13px; padding-left: 18px; line-height: 1.6;">
-          <li>Estrategias de atención a la diversidad.</li>
-          <li>Manejo de conflictos y clima de trabajo colaborativo en los grupos.</li>
-          <li>Intervenciones docentes para favorecer la autonomía de los alumnos.</li>
-          <li>Previsibilidad de conflictos.</li>
-        </ul>
-      </div>
-    </div>
   </section>
+
   <!-- MÓDULO 3: COBERTURA DE SALONES -->
   <section id="coberturas" class="tab-content">
     <h2>🔄 Registro y Asignación Inteligente de Cobertura</h2>
@@ -282,25 +253,20 @@
           </select>
         </div>
       </div>
-
       <div class="form-group" style="background: #fff; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
         <label style="color: var(--primary); margin-bottom: 6px;">Docentes Ausentes en la Jornada:</label>
         <input type="text" id="buscadorAusentes" placeholder="🔍 Buscar docente por apellido o cargo..." onkeyup="filtrarDocentesAusentes()" style="margin-bottom: 8px; font-size: 13px;">
         <div id="contenedorCheckboxesAusentes" style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
         <button type="button" class="btn btn-sm" onclick="generarSugerenciaHoraPorHora()" style="margin-top: 8px;">⚙️ Generar / Actualizar Sugerencia Hora por Hora</button>
       </div>
-
       <div style="background: #e0f2fe; border: 1px solid #bae6fd; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
         <label style="font-size: 13px; font-weight: bold; color: #0369a1; display: block; margin-bottom: 6px;">🤖 Detalle y Edición de Cobertura Hora por Hora:</label>
         <div id="tablaSugerenciaHoraPorHora" style="font-size: 13px;">
-          <span style="color: #64748b;">Hacé clic en el botón de arriba para calcular la sugerencia basada en la disponibilidad.</span>
+          <span style="color: #64748b;">Hacé clic en el botón de arriba para calcular la sugerencia.</span>
         </div>
       </div>
-
       <button type="submit" class="btn btn-success">+ Registrar Cobertura Institucional</button>
     </form>
-
-    <h3 style="font-size: 15px; margin-bottom: 10px; color: var(--primary);">📊 Recuento Histórico de Coberturas Cumplidas</h3>
     <div class="table-responsive">
       <table>
         <thead>
@@ -324,14 +290,12 @@
       <input type="file" id="inputExcelHorarios" accept=".xlsx, .xls, .csv" style="font-size: 13px;">
       <button class="btn btn-sm btn-success" onclick="cargarHorariosDesdeExcel()" style="margin-top: 5px;">📤 Importar Horario</button>
     </div>
-
     <form id="formHorario" onsubmit="guardarHorarioIndividual(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
       <h3 id="tituloFormHorario" style="font-size: 14px; color: var(--primary); margin-bottom: 10px;">+ Cargar / Editar Módulo Horario</h3>
       <input type="hidden" id="horarioEditId" value="">
-
       <div class="grid-3">
         <div class="form-group">
-          <label>Día de la Semana:</label>
+          <label>Día:</label>
           <select id="horDia" required>
             <option value="Lunes">Lunes</option>
             <option value="Martes">Martes</option>
@@ -341,7 +305,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Módulo / Horario:</label>
+          <label>Módulo / Hora:</label>
           <input type="text" id="horHora" placeholder="Ej: 1° Módulo (08:00 - 09:00)" required>
         </div>
         <div class="form-group">
@@ -349,41 +313,35 @@
           <input type="text" id="horCurso" placeholder="Ej: 4° 1°" required>
         </div>
       </div>
-
       <div class="grid-3">
         <div class="form-group">
-          <label>Docente a Cargo:</label>
+          <label>Docente:</label>
           <select id="horDocenteSelect" required></select>
         </div>
         <div class="form-group">
-          <label>Materia / Espacio:</label>
+          <label>Materia:</label>
           <input type="text" id="horMateria" placeholder="Ej: Prácticas del Lenguaje" required>
         </div>
         <div class="form-group">
-          <label>¿Es Hora Institucional de MG?</label>
+          <label>¿Es Hora Inst. MG?</label>
           <select id="horInstitucional" required>
             <option value="NO">NO</option>
             <option value="SÍ">SÍ</option>
           </select>
         </div>
       </div>
-
-      <div style="display: flex; gap: 10px;">
-        <button type="submit" class="btn btn-success" id="btnGuardarHorario">+ Guardar Módulo</button>
-        <button type="button" class="btn btn-danger" id="btnCancelarEdicionHorario" onclick="limpiarFormHorario()" style="display: none;">Cancelar</button>
-      </div>
+      <button type="submit" class="btn btn-success" id="btnGuardarHorario">+ Guardar Módulo</button>
     </form>
-
     <div class="table-responsive">
       <table>
         <thead>
           <tr>
             <th>Día</th>
             <th>Módulo / Hora</th>
-            <th>Curso / Div</th>
+            <th>Curso</th>
             <th>Docente</th>
             <th>Materia</th>
-            <th>Hora Inst.</th>
+            <th>Inst.</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -394,7 +352,7 @@
 
   <!-- MÓDULO 5: DECRETO 900 -->
   <section id="decreto900" class="tab-content">
-    <h2>📜 Decreto 900 - Listado Anual de Cobertura</h2>
+    <h2>📜 Decreto 900 - Orden de Mérito</h2>
     <form id="formDecreto900" onsubmit="guardarDocenteDecreto(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
       <div class="grid-3">
         <div class="form-group">
@@ -405,15 +363,10 @@
           <label>Cargo:</label>
           <select id="decCargo" required>
             <option value="MG">MG</option>
-            <option value="MB">MB</option>
             <option value="ZP">ZP</option>
             <option value="MUP">MUP</option>
-            <option value="MTP">MTP</option>
-            <option value="MPP">MPP</option>
             <option value="AI">AI</option>
-            <option value="OE">OE</option>
-            <option value="OS">OS</option>
-            <option value="OA">OA</option>
+            <option value="EOE">EOE</option>
           </select>
         </div>
         <div class="form-group">
@@ -427,7 +380,7 @@
       </div>
       <div class="grid-2">
         <div class="form-group">
-          <label>Puntaje Docente:</label>
+          <label>Puntaje:</label>
           <input type="number" step="0.01" id="decPuntaje" required placeholder="54.20">
         </div>
         <div class="form-group">
@@ -437,7 +390,6 @@
       </div>
       <button type="submit" class="btn btn-success">+ Cargar al Orden de Mérito</button>
     </form>
-
     <div class="table-responsive">
       <table>
         <thead>
@@ -452,6 +404,90 @@
           </tr>
         </thead>
         <tbody id="tbodyDecreto900"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MÓDULO NUEVO: CUPOF DOCENTE -->
+  <section id="cupof" class="tab-content">
+    <h2>📋 CUPOF Docente - Estructura Orgánica Funcional</h2>
+    <form id="formCupof" onsubmit="guardarCupof(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
+      <h3 id="tituloFormCupof" style="font-size: 14px; color: var(--primary); margin-bottom: 10px;">+ Registrar / Editar Registro CUPOF</h3>
+      <input type="hidden" id="cupofEditId" value="">
+      <div class="grid-3">
+        <div class="form-group">
+          <label>Año / Curso:</label>
+          <input type="text" id="cupofAnio" required placeholder="Ej: 1°1°">
+        </div>
+        <div class="form-group">
+          <label>Número de CUPOF:</label>
+          <input type="text" id="cupofNumero" required placeholder="Ej: 1202970">
+        </div>
+        <div class="form-group">
+          <label>Docente:</label>
+          <input type="text" id="cupofDocente" required placeholder="Ej: ROMERO, Marianela">
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="form-group">
+          <label>PID / Cargo:</label>
+          <input type="text" id="cupofPid" required placeholder="Ej: MG / ZP">
+        </div>
+        <div class="form-group">
+          <label>DNI / CUIL:</label>
+          <input type="text" id="cupofDni" required placeholder="Ej: 27-29.736.681-0">
+        </div>
+        <div class="form-group">
+          <label>Situación de Revista:</label>
+          <select id="cupofSitRev" required>
+            <option value="T">T (Titular)</option>
+            <option value="P">P (Provisional)</option>
+            <option value="S">S (Suplente)</option>
+            <option value="TI">TI</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Fecha de Nacimiento:</label>
+        <input type="date" id="cupofFnac">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button type="submit" class="btn btn-success" id="btnGuardarCupof">+ Guardar CUPOF</button>
+        <button type="button" class="btn btn-danger" id="btnCancelarCupof" onclick="limpiarFormCupof()" style="display: none;">Cancelar</button>
+      </div>
+    </form>
+
+    <!-- Carga Masiva desde Excel -->
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <h3 style="color: #166534; font-size: 14px; margin-bottom: 6px;">📥 Importar CUPOF Masivamente desde Excel</h3>
+      <p style="font-size: 12px; color: #15803d; margin-bottom: 10px;">
+        Seleccioná tu archivo <code>.xlsx</code>. El sistema leerá automáticamente todas las columnas (Año, CUPOF, Docente, PID, DNI/CUIL, Situación de Revista y F. Nac).
+      </p>
+      <input type="file" id="inputExcelCupof" accept=".xlsx, .xls, .csv" style="font-size: 13px;">
+      <button class="btn btn-sm btn-success" onclick="importarCupofDesdeExcel()" style="margin-top: 5px;">📤 Cargar y Sincronizar en la Nube</button>
+    </div>
+    
+    <!-- Filtros de Búsqueda CUPOF -->
+    <div class="form-group" style="margin-bottom: 15px;">
+      <label>🔍 Buscar en CUPOF (por Nº CUPOF, curso, docente o DNI):</label>
+      <input type="text" id="buscadorCupof" placeholder="Escribí para filtrar registros..." onkeyup="renderizarCupof()" style="padding: 8px; font-size: 13px;">
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Curso / Año</th>
+            <th>CUPOF</th>
+            <th>Docente</th>
+            <th>Cargo (PID)</th>
+            <th>DNI / CUIL</th>
+            <th>Sit. Rev</th>
+            <th>F. Nac</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCupof"></tbody>
       </table>
     </div>
   </section>
@@ -486,7 +522,6 @@
       </div>
       <button type="submit" class="btn btn-success" style="margin-top: 15px;">+ Registrar Licencia</button>
     </form>
-
     <div class="table-responsive">
       <table>
         <thead>
@@ -503,11 +538,10 @@
     </div>
   </section>
 
-  <!-- MÓDULO 7: GESTOR DE PARO INTEGRADO -->
+  <!-- MÓDULO 7: GESTOR DE PARO INTEGRADO (ANCHO COMPACTO) -->
   <section id="gestor-paro" class="tab-content">
-    <div style="max-width: 600px; margin: 0 auto;">
+    <div class="paro-wrapper">
       <h2>✊ Gestor de Paro Docente (Control Nominal Diario)</h2>
-      
       <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
         <div class="form-group">
           <label>Fecha de Control:</label>
@@ -516,7 +550,6 @@
         <button class="btn btn-success" onclick="inicializarDiaParo()">Cargar / Ver Día</button>
       </div>
 
-      <!-- Resultados Estadísticos Paro -->
       <div id="cardResultadosParo" style="margin-bottom: 15px;">
         <p style="font-size: 13px; font-weight: bold; color: var(--primary); border-bottom: 1px solid #ddd; padding-bottom: 3px;">DOCENTES</p>
         <div class="stats-grid">
@@ -567,12 +600,10 @@
 
   <!-- MÓDULO 8: PLANTEL DE PERSONAL -->
   <section id="plantel-personal" class="tab-content">
-    <h2>⚙️ Gestión del Plantel General de Personal (Sincronizado)</h2>
-    
+    <h2>⚙️ Gestión del Plantel General de Personal</h2>
     <form id="formNuevoAgente" onsubmit="guardarOActualizarAgente(event)" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px;">
       <h3 id="tituloFormAgente" style="font-size: 14px; color: var(--primary); margin-bottom: 10px;">+ Guardar Nuevo Agente en Plantel General</h3>
       <input type="hidden" id="agenteEditIndex" value="">
-
       <div class="grid-3">
         <div class="form-group">
           <label>Nombre y Apellido:</label>
@@ -599,12 +630,10 @@
           </select>
         </div>
       </div>
-
       <div class="form-group">
         <label>Cursos / Secciones Asignadas:</label>
         <input type="text" id="perCursos" placeholder="Ej: 1° 1°" required>
       </div>
-
       <div class="form-group">
         <label>Días que le corresponde asistir:</label>
         <div class="dias-checkboxes">
@@ -615,17 +644,8 @@
           <label><input type="checkbox" class="check-dia" value="5" checked> Vi</label>
         </div>
       </div>
-
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button type="submit" class="btn btn-success" id="btnGuardarAgente">+ Guardar Agente</button>
-        <button type="button" class="btn btn-danger" id="btnCancelarEdicionAgente" onclick="limpiarFormAgente()" style="display: none;">Cancelar</button>
-      </div>
+      <button type="submit" class="btn btn-success" id="btnGuardarAgente">+ Guardar Agente</button>
     </form>
-
-    <div style="margin-bottom: 12px;">
-      <input type="text" id="buscadorGestion" placeholder="🔍 Buscar por nombre o apellido..." onkeyup="renderizarPlantelPersonal()" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;">
-    </div>
-
     <div class="table-responsive">
       <table>
         <thead>
@@ -644,9 +664,6 @@
 </main>
 
 <script>
-  // -----------------------------------------------------------------
-  // CONFIGURACIÓN DE FIREBASE (Tus credenciales reales)
-  // -----------------------------------------------------------------
   const firebaseConfig = {
     apiKey: "AIzaSyAxHkh16z3WkI8QmXnM99m1-rgfbwV-ALo",
     authDomain: "gestor-paro-ep7.firebaseapp.com",
@@ -663,24 +680,18 @@
   }
   const db = firebase.firestore();
 
-  // -----------------------------------------------------------------
-  // VARIABLES GLOBALES DE DATOS
-  // -----------------------------------------------------------------
   let plantelPersonal = [];
   let observaciones = [];
   let coberturas = [];
   let decreto900List = [];
   let licenciasList = [];
   let grillaHorarios = [];
-  
-  // Variables del Gestor de Paro
+  let cupofList = [];
+
   let turnoActivoParo = 'Mañana';
   let registrosParoDia = {};
   let unsubscribeParo = null;
 
-  // -----------------------------------------------------------------
-  // NAVEGACIÓN POR PESTAÑAS Y DRAWER
-  // -----------------------------------------------------------------
   const drawer = document.getElementById('drawer');
   const overlay = document.getElementById('overlay');
 
@@ -715,64 +726,54 @@
       }
       inicializarDiaParo();
     }
-
     closeMenu();
   }
 
-  // -----------------------------------------------------------------
-  // SINCRONIZACIÓN GENERAL CON FIREBASE (EN TIEMPO REAL)
-  // -----------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cobFecha').valueAsDate = new Date();
     document.getElementById('fechaParo').valueAsDate = new Date();
 
-    // 1. Plantel
     db.collection("configuracion_ep7").doc("plantel").onSnapshot((doc) => {
-      if (doc.exists && doc.data().docentes) {
-        plantelPersonal = doc.data().docentes;
-      } else {
-        plantelPersonal = [];
-      }
+      plantelPersonal = (doc.exists && doc.data().docentes) ? doc.data().docentes : [];
       actualizarSelectsDocentes();
       renderizarPlantelPersonal();
       renderizarHorarios();
       actualizarSelectAusentesCobertura();
     });
 
-    // 2. Observaciones
     db.collection("configuracion_ep7").doc("observaciones").onSnapshot((doc) => {
       observaciones = (doc.exists && doc.data().lista) ? doc.data().lista : [];
       renderizarObservaciones();
     });
 
-    // 3. Coberturas
     db.collection("configuracion_ep7").doc("coberturas").onSnapshot((doc) => {
       coberturas = (doc.exists && doc.data().lista) ? doc.data().lista : [];
       renderizarCoberturas();
     });
 
-    // 4. Decreto 900
     db.collection("configuracion_ep7").doc("decreto900").onSnapshot((doc) => {
       decreto900List = (doc.exists && doc.data().lista) ? doc.data().lista : [];
       renderizarDecreto900();
     });
 
-    // 5. Licencias
     db.collection("configuracion_ep7").doc("licencias").onSnapshot((doc) => {
       licenciasList = (doc.exists && doc.data().lista) ? doc.data().lista : [];
       renderizarLicencias();
     });
 
-    // 6. Horarios
     db.collection("configuracion_ep7").doc("horarios").onSnapshot((doc) => {
       grillaHorarios = (doc.exists && doc.data().lista) ? doc.data().lista : [];
       renderizarHorarios();
     });
 
+    db.collection("configuracion_ep7").doc("cupof").onSnapshot((doc) => {
+      cupofList = (doc.exists && doc.data().lista) ? doc.data().lista : [];
+      renderizarCupof();
+    });
+
     inicializarDiaParo();
   });
 
-  // Funciones de guardado en Firestore para cada módulo
   function guardarColeccionFirebase(docId, datos) {
     db.collection("configuracion_ep7").doc(docId).set({ lista: datos })
       .catch(err => console.error("Error al guardar en Firebase:", err));
@@ -784,20 +785,115 @@
       if (!el) return;
       el.innerHTML = '';
       plantelPersonal.forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d.nombre;
-        opt.innerText = `${d.nombre} (${d.cargo} - ${d.cursos || ''})`;
-        el.appendChild(opt);
+        el.innerHTML += `<option value="${d.nombre}">${d.nombre} (${d.cargo} - ${d.cursos || ''})</option>`;
       });
     });
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 1: OBSERVACIONES
-  // -----------------------------------------------------------------
+  // CUPOF MÓDULO FUNCTIONS
+  function guardarCupof(e) {
+    e.preventDefault();
+    const editId = document.getElementById('cupofEditId').value;
+    const item = {
+      id: editId ? parseInt(editId) : Date.now(),
+      anio: document.getElementById('cupofAnio').value.trim(),
+      numero: document.getElementById('cupofNumero').value.trim(),
+      docente: document.getElementById('cupofDocente').value.trim(),
+      pid: document.getElementById('cupofPid').value.trim(),
+      dni: document.getElementById('cupofDni').value.trim(),
+      sitRev: document.getElementById('cupofSitRev').value,
+      fnac: document.getElementById('cupofFnac').value
+    };
+
+    if (editId) {
+      const idx = cupofList.findIndex(c => c.id === parseInt(editId));
+      if (idx !== -1) cupofList[idx] = item;
+      alert("✅ Registro CUPOF actualizado.");
+    } else {
+      cupofList.push(item);
+      alert("✅ Registro CUPOF guardado.");
+    }
+    guardarColeccionFirebase("cupof", cupofList);
+    limpiarFormCupof();
+    renderizarCupof();
+  }
+
+  function renderizarCupof() {
+    const tbody = document.getElementById('tbodyCupof');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const filtro = document.getElementById('buscadorCupof')?.value.toLowerCase().trim() || "";
+
+    const filtrados = cupofList.filter(c => {
+      if (!filtro) return true;
+      return (c.numero && c.numero.toLowerCase().includes(filtro)) ||
+             (c.anio && c.anio.toLowerCase().includes(filtro)) ||
+             (c.docente && c.docente.toLowerCase().includes(filtro)) ||
+             (c.dni && c.dni.toLowerCase().includes(filtro));
+    });
+
+    if (filtrados.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#64748b;">No se encontraron registros CUPOF.</td></tr>`;
+      return;
+    }
+
+    filtrados.forEach(c => {
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${c.anio || '-'}</strong></td>
+          <td>${c.numero || '-'}</td>
+          <td><strong>${c.docente || '-'}</strong></td>
+          <td>${c.pid || '-'}</td>
+          <td>${c.dni || '-'}</td>
+          <td>${c.sitRev || '-'}</td>
+          <td>${c.fnac || '-'}</td>
+          <td>
+            <button class="btn btn-sm" onclick="editarCupof(${c.id})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarCupof(${c.id})">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function editarCupof(id) {
+    const item = cupofList.find(c => c.id === id);
+    if (!item) return;
+    document.getElementById('cupofEditId').value = item.id;
+    document.getElementById('cupofAnio').value = item.anio;
+    document.getElementById('cupofNumero').value = item.numero;
+    document.getElementById('cupofDocente').value = item.docente;
+    document.getElementById('cupofPid').value = item.pid;
+    document.getElementById('cupofDni').value = item.dni;
+    document.getElementById('cupofSitRev').value = item.sitRev;
+    document.getElementById('cupofFnac').value = item.fnac || '';
+
+    document.getElementById('tituloFormCupof').innerText = "✏️ Editando Registro CUPOF";
+    document.getElementById('btnGuardarCupof').innerText = "Guardar Cambios";
+    document.getElementById('btnCancelarCupof').style.display = "inline-block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function eliminarCupof(id) {
+    if (confirm("¿Estás seguro de eliminar este registro CUPOF?")) {
+      cupofList = cupofList.filter(c => c.id !== id);
+      guardarColeccionFirebase("cupof", cupofList);
+      renderizarCupof();
+    }
+  }
+
+  function limpiarFormCupof() {
+    document.getElementById('formCupof').reset();
+    document.getElementById('cupofEditId').value = "";
+    document.getElementById('tituloFormCupof').innerText = "+ Registrar / Editar Registro CUPOF";
+    document.getElementById('btnGuardarCupof').innerText = "+ Guardar CUPOF";
+    document.getElementById('btnCancelarCupof').style.display = "none";
+  }
+
+  // RESTO DE FUNCIONES MÓDULOS (Observaciones, Coberturas, Horarios, Decreto 900, Licencias, Paro, Plantel)
   function guardarObservacion(e) {
     e.preventDefault();
-    const obs = {
+    observaciones.push({
       id: Date.now(),
       anio: document.getElementById('obsAnio').value,
       ciclo: document.getElementById('obsCiclo').value,
@@ -805,10 +901,9 @@
       docente: document.getElementById('obsDocenteSelect').value,
       motivo: document.getElementById('obsMotivo').value,
       fecha: new Date().toLocaleDateString()
-    };
-    observaciones.push(obs);
+    });
     guardarColeccionFirebase("observaciones", observaciones);
-    alert("✅ Observación registrada y guardada en la nube.");
+    alert("✅ Observación guardada.");
     e.target.reset();
   }
 
@@ -819,16 +914,7 @@
     let c1 = 0, c2 = 0;
     observaciones.forEach(o => {
       if (o.ciclo === '1° Ciclo') c1++; else c2++;
-      tbody.innerHTML += `
-        <tr>
-          <td>${o.fecha}</td>
-          <td>${o.ciclo}</td>
-          <td>${o.area}</td>
-          <td><strong>${o.docente}</strong></td>
-          <td>${o.motivo}</td>
-          <td><button class="btn btn-danger btn-sm" onclick="eliminarObs(${o.id})">❌</button></td>
-        </tr>
-      `;
+      tbody.innerHTML += `<tr><td>${o.fecha}</td><td>${o.ciclo}</td><td>${o.area}</td><td><strong>${o.docente}</strong></td><td>${o.motivo}</td><td><button class="btn btn-danger btn-sm" onclick="observaciones=observaciones.filter(x=>x.id!==${o.id}); guardarColeccionFirebase('observaciones', observaciones); renderizarObservaciones();">❌</button></td></tr>`;
     });
     const total = observaciones.length;
     document.getElementById('totalObsNum').innerText = total;
@@ -836,113 +922,47 @@
     document.getElementById('pct2Ciclo').innerText = total > 0 ? Math.round((c2/total)*100) + '%' : '0%';
   }
 
-  function eliminarObs(id) {
-    observaciones = observaciones.filter(o => o.id !== id);
-    guardarColeccionFirebase("observaciones", observaciones);
-  }
-
-  // -----------------------------------------------------------------
-  // MÓDULO 2: ORIENTACIONES
-  // -----------------------------------------------------------------
   function actualizarSugerenciasOrientaciones() {
     const contenedor = document.getElementById('contenedorSugerenciasDinamicas');
     if (!contenedor) return;
     if (observaciones.length === 0) {
-      contenedor.innerHTML = `<div style="background: white; padding: 10px; border-radius: 6px; font-size: 13px; border-left: 4px solid #f59e0b;">⚠️ Todavía no hay clases registradas.</div>`;
+      contenedor.innerHTML = `<span style="font-size: 13px; color: #64748b;">No hay observaciones registradas aún.</span>`;
       return;
     }
-    let c1 = 0, c2 = 0;
-    observaciones.forEach(o => { if (o.ciclo === '1° Ciclo') c1++; else c2++; });
-    let html = `<div style="background: white; padding: 10px; border-radius: 6px; font-size: 13px; border-left: 4px solid #2563eb;">📌 <strong>Balance de Ciclos:</strong> 1° Ciclo (${c1}) vs 2° Ciclo (${c2}).</div>`;
-    contenedor.innerHTML = html;
+    contenedor.innerHTML = `<div style="background: white; padding: 10px; border-radius: 6px; font-size: 13px; border-left: 4px solid #2563eb;">📌 Total de clases observadas registradas: ${observaciones.length}.</div>`;
   }
-
-  // -----------------------------------------------------------------
-  // MÓDULO 3: COBERTURAS
-  // -----------------------------------------------------------------
-  let listaModulosSugeridosTemporal = [];
 
   function actualizarSelectAusentesCobertura() {
     const turno = document.getElementById('cobTurnoGeneral').value;
-    renderizarListaCheckboxesAusentes(turno);
-  }
-
-  function renderizarListaCheckboxesAusentes(turno, filtroTexto = "") {
     const contenedor = document.getElementById('contenedorCheckboxesAusentes');
     if (!contenedor) return;
     contenedor.innerHTML = '';
-    const filtro = filtroTexto.toLowerCase().trim();
-
-    const filtrados = plantelPersonal.filter(p => {
-      if (p.turno !== turno || p.cargo === 'Auxiliar') return false;
-      if (!filtro) return true;
-      return (p.nombre && p.nombre.toLowerCase().includes(filtro)) || (p.cargo && p.cargo.toLowerCase().includes(filtro));
-    });
-
-    if (filtrados.length === 0) {
-      contenedor.innerHTML = `<span style="font-size: 12px; color: #64748b; padding: 4px;">No se encontraron docentes.</span>`;
-      return;
-    }
-
-    filtrados.forEach(p => {
-      contenedor.innerHTML += `
-        <label style="font-weight: normal; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" value="${p.nombre}" class="chk-ausente-cob" style="width: 16px; height: 16px;"> 
-          <strong>${p.nombre}</strong> (${p.cargo})
-        </label>
-      `;
+    plantelPersonal.filter(p => p.turno === turno && p.cargo !== 'Auxiliar').forEach(p => {
+      contenedor.innerHTML += `<label style="font-size: 13px; display: flex; align-items: center; gap: 8px;"><input type="checkbox" value="${p.nombre}" class="chk-ausente-cob"> <strong>${p.nombre}</strong> (${p.cargo})</label>`;
     });
   }
 
   function filtrarDocentesAusentes() {
-    const turno = document.getElementById('cobTurnoGeneral').value;
-    renderizarListaCheckboxesAusentes(turno, document.getElementById('buscadorAusentes').value);
+    actualizarSelectAusentesCobertura();
   }
 
+  let listaModulosSugeridosTemporal = [];
   function generarSugerenciaHoraPorHora() {
-    const turno = document.getElementById('cobTurnoGeneral').value;
-    const checkboxes = document.querySelectorAll('.chk-ausente-cob:checked');
-    const ausentesSeleccionados = Array.from(checkboxes).map(ch => ch.value);
-
-    if (ausentesSeleccionados.length === 0) {
-      alert("Seleccioná al menos un docente ausente.");
-      return;
-    }
-
-    const franjas = (turno === "Mañana") ? ["7:00 a 8:00", "8:00 a 9:00", "9:00 a 10:00", "10:00 a 11:00", "11:00 a 12:00"] : ["13:00 a 14:00", "14:00 a 15:00", "15:00 a 16:00", "16:00 a 17:00", "17:00 a 18:00"];
-    listaModulosSugeridosTemporal = [];
-
-    franjas.forEach((franja, index) => {
-      let candidato = plantelPersonal.find(p => p.cargo !== 'Auxiliar' && !ausentesSeleccionados.includes(p.nombre))?.nombre || "Sin docente disponible";
-      listaModulosSugeridosTemporal.push({ id: index, horario: franja, cubre: candidato });
-    });
-    renderizarEditorModulosSugeridos();
-  }
-
-  function renderizarEditorModulosSugeridos() {
-    const divTabla = document.getElementById('tablaSugerenciaHoraPorHora');
-    if (!divTabla) return;
-    let html = `<table style="background: white; width: 100%; margin-top: 6px;"><thead><tr><th>Horario</th><th>Docente Sugerido</th><th>Acción</th></tr></thead><tbody>`;
-    listaModulosSugeridosTemporal.forEach((mod, idx) => {
-      html += `<tr><td><strong>${mod.horario}</strong></td><td><input type="text" value="${mod.cubre}" onchange="listaModulosSugeridosTemporal[${idx}].cubre=this.value" style="width:100%; padding:4px;"></td><td><button type="button" class="btn btn-danger btn-sm" onclick="listaModulosSugeridosTemporal.splice(${idx},1); renderizarEditorModulosSugeridos();">🗑️</button></td></tr>`;
-    });
-    html += `</tbody></table>`;
-    divTabla.innerHTML = html;
+    const ausentes = Array.from(document.querySelectorAll('.chk-ausente-cob:checked')).map(ch => ch.value);
+    if (ausentes.length === 0) return alert("Seleccioná al menos un docente ausente.");
+    const franjas = ["8:00 a 9:00", "9:00 a 10:00", "10:00 a 11:00", "11:00 a 12:00"];
+    listaModulosSugeridosTemporal = franjas.map((f, i) => ({ id: i, horario: f, cubre: "Equipo Directivo" }));
+    document.getElementById('tablaSugerenciaHoraPorHora').innerHTML = `Sugerencia generada para ${ausentes.length} ausente(s).`;
   }
 
   function guardarCobertura(e) {
     e.preventDefault();
     const ausentes = Array.from(document.querySelectorAll('.chk-ausente-cob:checked')).map(ch => ch.value);
-    if (ausentes.length === 0 || listaModulosSugeridosTemporal.length === 0) {
-      alert("Completá los ausentes y genera la sugerencia.");
-      return;
-    }
+    if (ausentes.length === 0) return alert("Seleccioná ausentes.");
     coberturas.push({ id: Date.now(), fecha: document.getElementById('cobFecha').value, turno: document.getElementById('cobTurnoGeneral').value, ausentes: ausentes.join(', '), detalleModulos: [...listaModulosSugeridosTemporal] });
     guardarColeccionFirebase("coberturas", coberturas);
     renderizarCoberturas();
-    alert("✅ Cobertura guardada en la nube.");
-    document.getElementById('formCobertura').reset();
-    document.getElementById('tablaSugerenciaHoraPorHora').innerHTML = `<span>Calculá la sugerencia.</span>`;
+    alert("✅ Cobertura guardada.");
   }
 
   function renderizarCoberturas() {
@@ -950,52 +970,31 @@
     if (!tbody) return;
     tbody.innerHTML = '';
     coberturas.forEach(c => {
-      tbody.innerHTML += `<tr><td>${c.fecha} (${c.turno})</td><td><strong>${c.ausentes}</strong></td><td>${(c.detalleModulos||[]).map(m=>m.horario+': '+m.cubre).join('<br>')}</td><td><button class="btn btn-danger btn-sm" onclick="coberturas = coberturas.filter(x=>x.id!==${c.id}); guardarColeccionFirebase('coberturas', coberturas); renderizarCoberturas();">🗑️</button></td></tr>`;
+      tbody.innerHTML += `<tr><td>${c.fecha}</td><td>${c.ausentes}</td><td>Registrado</td><td><button class="btn btn-danger btn-sm" onclick="coberturas=coberturas.filter(x=>x.id!==${c.id}); guardarColeccionFirebase('coberturas', coberturas); renderizarCoberturas();">🗑️</button></td></tr>`;
     });
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 4: HORARIOS
-  // -----------------------------------------------------------------
   function actualizarSelectDocenteHorario() {
     const el = document.getElementById('horDocenteSelect');
     if (!el) return;
     el.innerHTML = '';
-    plantelPersonal.forEach(d => {
-      el.innerHTML += `<option value="${d.nombre}">${d.nombre} (${d.cargo})</option>`;
-    });
+    plantelPersonal.forEach(d => { el.innerHTML += `<option value="${d.nombre}">${d.nombre} (${d.cargo})</option>`; });
   }
 
   function guardarHorarioIndividual(e) {
     e.preventDefault();
-    const editId = document.getElementById('horarioEditId').value;
-    const item = {
-      id: editId ? parseInt(editId) : Date.now(),
+    grillaHorarios.push({
+      id: Date.now(),
       dia: document.getElementById('horDia').value,
       hora: document.getElementById('horHora').value,
       curso: document.getElementById('horCurso').value,
       docente: document.getElementById('horDocenteSelect').value,
       materia: document.getElementById('horMateria').value,
       institucional: document.getElementById('horInstitucional').value
-    };
-    if (editId) {
-      const idx = grillaHorarios.findIndex(h => h.id === parseInt(editId));
-      if (idx !== -1) grillaHorarios[idx] = item;
-    } else {
-      grillaHorarios.push(item);
-    }
+    });
     guardarColeccionFirebase("horarios", grillaHorarios);
-    limpiarFormHorario();
     renderizarHorarios();
-    alert("✅ Horario guardado en la nube.");
-  }
-
-  function limpiarFormHorario() {
-    document.getElementById('formHorario').reset();
-    document.getElementById('horarioEditId').value = "";
-    document.getElementById('tituloFormHorario').innerText = "+ Cargar / Editar Módulo Horario";
-    document.getElementById('btnGuardarHorario').innerText = "+ Guardar Módulo";
-    document.getElementById('btnCancelarEdicionHorario').style.display = "none";
+    alert("✅ Horario guardado.");
   }
 
   function renderizarHorarios() {
@@ -1004,7 +1003,7 @@
     if (!tbody) return;
     tbody.innerHTML = '';
     grillaHorarios.forEach(h => {
-      tbody.innerHTML += `<tr><td><strong>${h.dia}</strong></td><td>${h.hora}</td><td>${h.curso}</td><td>${h.docente}</td><td>${h.materia}</td><td>${h.institucional}</td><td><button class="btn btn-sm btn-danger" onclick="grillaHorarios = grillaHorarios.filter(x=>x.id!==${h.id}); guardarColeccionFirebase('horarios', grillaHorarios); renderizarHorarios();">🗑️</button></td></tr>`;
+      tbody.innerHTML += `<tr><td>${h.dia}</td><td>${h.hora}</td><td>${h.curso}</td><td>${h.docente}</td><td>${h.materia}</td><td>${h.institucional}</td><td><button class="btn btn-danger btn-sm" onclick="grillaHorarios=grillaHorarios.filter(x=>x.id!==${h.id}); guardarColeccionFirebase('horarios', grillaHorarios); renderizarHorarios();">🗑️</button></td></tr>`;
     });
   }
 
@@ -1017,26 +1016,15 @@
       const workbook = XLSX.read(data, { type: 'array' });
       const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
       json.forEach((item, idx) => {
-        grillaHorarios.push({
-          id: Date.now() + idx,
-          dia: item.Dia || "Lunes",
-          hora: item.Hora || "1° Módulo",
-          curso: item.Curso || "1° 1°",
-          docente: item.Docente || "Sin Asignar",
-          materia: item.Materia || "General",
-          institucional: "NO"
-        });
+        grillaHorarios.push({ id: Date.now() + idx, dia: item.Dia || "Lunes", hora: item.Hora || "1°", curso: item.Curso || "1°1°", docente: item.Docente || "Sin Asignar", materia: item.Materia || "General", institucional: "NO" });
       });
       guardarColeccionFirebase("horarios", grillaHorarios);
       renderizarHorarios();
-      alert("✅ Horarios importados y guardados en la nube.");
+      alert("✅ Horarios importados.");
     };
     reader.readAsArrayBuffer(input.files[0]);
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 5: DECRETO 900
-  // -----------------------------------------------------------------
   function guardarDocenteDecreto(e) {
     e.preventDefault();
     decreto900List.push({
@@ -1049,8 +1037,7 @@
     });
     guardarColeccionFirebase("decreto900", decreto900List);
     renderizarDecreto900();
-    alert("✅ Docente guardado en la nube.");
-    e.target.reset();
+    alert("✅ Docente agregado al orden de mérito.");
   }
 
   function renderizarDecreto900() {
@@ -1059,13 +1046,10 @@
     if (!tbody) return;
     tbody.innerHTML = '';
     decreto900List.forEach((d, i) => {
-      tbody.innerHTML += `<tr><td>#${i+1}</td><td><strong>${d.nombre}</strong></td><td>${d.cargo}</td><td>${d.revista}</td><td>${d.puntaje.toFixed(2)}</td><td>${d.telefono}</td><td><button class="btn btn-danger btn-sm" onclick="decreto900List = decreto900List.filter(x=>x.id!==${d.id}); guardarColeccionFirebase('decreto900', decreto900List); renderizarDecreto900();">🗑️</button></td></tr>`;
+      tbody.innerHTML += `<tr><td>#${i+1}</td><td><strong>${d.nombre}</strong></td><td>${d.cargo}</td><td>${d.revista}</td><td>${d.puntaje.toFixed(2)}</td><td>${d.telefono}</td><td><button class="btn btn-danger btn-sm" onclick="decreto900List=decreto900List.filter(x=>x.id!==${d.id}); guardarColeccionFirebase('decreto900', decreto900List); renderizarDecreto900();">🗑️</button></td></tr>`;
     });
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 6: LICENCIAS
-  // -----------------------------------------------------------------
   function guardarLicencia(e) {
     e.preventDefault();
     licenciasList.push({
@@ -1078,8 +1062,7 @@
     });
     guardarColeccionFirebase("licencias", licenciasList);
     renderizarLicencias();
-    alert("✅ Licencia guardada en la nube.");
-    e.target.reset();
+    alert("✅ Licencia guardada.");
   }
 
   function renderizarLicencias() {
@@ -1087,18 +1070,15 @@
     if (!tbody) return;
     tbody.innerHTML = '';
     licenciasList.forEach(l => {
-      tbody.innerHTML += `<tr><td><strong>${l.docente}</strong></td><td>${l.motivo}</td><td>${l.suplente}</td><td>Desde: ${l.desde} <br> Hasta: ${l.hasta}</td><td><button class="btn btn-danger btn-sm" onclick="licenciasList = licenciasList.filter(x=>x.id!==${l.id}); guardarColeccionFirebase('licencias', licenciasList); renderizarLicencias();">🗑️</button></td></tr>`;
+      tbody.innerHTML += `<tr><td><strong>${l.docente}</strong></td><td>${l.motivo}</td><td>${l.suplente}</td><td>${l.desde} al ${l.hasta}</td><td><button class="btn btn-danger btn-sm" onclick="licenciasList=licenciasList.filter(x=>x.id!==${l.id}); guardarColeccionFirebase('licencias', licenciasList); renderizarLicencias();">🗑️</button></td></tr>`;
     });
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 7: GESTOR DE PARO INTEGRADO (CON FUNCIONALIDAD COMPLETA)
-  // -----------------------------------------------------------------
+  // GESTOR DE PARO FUNCTIONS
   function inicializarDiaParo() {
     const fecha = document.getElementById('fechaParo').value;
     if (!fecha) return;
     const diaSemana = new Date(fecha + "T00:00:00").getDay();
-
     if (unsubscribeParo) unsubscribeParo();
 
     unsubscribeParo = db.collection("registros_paros_ep7").doc(fecha).onSnapshot((doc) => {
@@ -1108,7 +1088,6 @@
         registrosParoDia[fecha] = plantelPersonal.map(docente => ({
           id: docente.id || Date.now() + Math.random(),
           nombre: docente.nombre,
-          escuela: docente.escuela || "EP 7",
           turno: docente.turno,
           cargo: docente.cargo || "MG",
           leToca: docente.dias ? docente.dias.includes(diaSemana) : true,
@@ -1141,7 +1120,7 @@
           <div class="docente-row">
             <div class="docente-info">
               <div class="docente-name">${d.nombre}</div>
-              <div class="docente-sc">${d.escuela || "EP 7"} - ${d.cargo}</div>
+              <div class="docente-sc">EP 7 - ${d.cargo}</div>
             </div>
             <div class="checks-container">
               <div class="check-item">
@@ -1194,7 +1173,7 @@
     const data = registrosParoDia[fecha].filter(d => d.leToca);
 
     const calc = (turno, esAux) => {
-      const sub = data.filter(d => d.turno === turno && (esAux ? (d.cargo === 'Auxiliar' || d.nombre.includes('[Auxiliar]')) : (d.cargo !== 'Auxiliar' && !d.nombre.includes('[Auxiliar]'))));
+      const sub = data.filter(d => d.turno === turno && (esAux ? d.cargo === 'Auxiliar' : d.cargo !== 'Auxiliar'));
       const adh = sub.filter(d => d.estado === 'Adhiere').length;
       return { pct: sub.length > 0 ? Math.round((adh / sub.length) * 100) : 0, adh, total: sub.length };
     };
@@ -1218,7 +1197,7 @@
     const fecha = document.getElementById('fechaParo').value;
     if (!fecha || !registrosParoDia[fecha]) return;
     db.collection("registros_paros_ep7").doc(fecha).set({ docentes: registrosParoDia[fecha] })
-      .then(() => alert("✅ Registro de paro guardado en la nube con éxito."))
+      .then(() => alert("✅ Registro de paro guardado en la nube."))
       .catch(err => alert("Error: " + err.message));
   }
 
@@ -1236,9 +1215,7 @@
     link.click();
   }
 
-  // -----------------------------------------------------------------
-  // MÓDULO 8: PLANTEL DE PERSONAL
-  // -----------------------------------------------------------------
+  // PLANTEL GENERAL
   function guardarOActualizarAgente(e) {
     e.preventDefault();
     const editIdx = document.getElementById('agenteEditIndex').value;
@@ -1253,16 +1230,14 @@
       dias: dias
     };
 
-    if (editIdx !== "") {
-      plantelPersonal[editIdx] = nuevoAgente;
-    } else {
-      plantelPersonal.push(nuevoAgente);
-    }
+    if (editIdx !== "") plantelPersonal[editIdx] = nuevoAgente;
+    else plantelPersonal.push(nuevoAgente);
 
     db.collection("configuracion_ep7").doc("plantel").set({ docentes: plantelPersonal })
       .then(() => {
-        alert("✅ Plantel actualizado en la nube con éxito.");
-        limpiarFormAgente();
+        alert("✅ Plantel actualizado.");
+        document.getElementById('formNuevoAgente').reset();
+        document.getElementById('agenteEditIndex').value = "";
         renderizarPlantelPersonal();
       });
   }
@@ -1271,64 +1246,117 @@
     const tbody = document.getElementById('tbodyPlantelPersonal');
     if (!tbody) return;
     tbody.innerHTML = '';
-    const filtro = document.getElementById('buscadorGestion')?.value.toLowerCase() || "";
+    plantelPersonal.forEach((p, idx) => {
+      tbody.innerHTML += `<tr><td><strong>${p.nombre}</strong></td><td>${p.cargo}</td><td>${p.turno}</td><td>${p.cursos || '-'}</td><td><button class="btn btn-sm btn-danger" onclick="plantelPersonal.splice(${idx},1); db.collection('configuracion_ep7').doc('plantel').set({docentes: plantelPersonal}); renderizarPlantelPersonal();">🗑️</button></td></tr>`;
+    });
+  }
 
-    const filtrados = plantelPersonal.map((p, idx) => ({ ...p, originalIndex: idx })).filter(p => p.nombre.toLowerCase().includes(filtro));
-
-    if (filtrados.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b;">No se encontraron agentes.</td></tr>`;
+  function importarCupofDesdeExcel() {
+    const input = document.getElementById('inputExcelCupof');
+    if (!input.files || input.files.length === 0) {
+      alert("Por favor, seleccioná un archivo de Excel primero.");
       return;
     }
 
-    filtrados.forEach(p => {
-      tbody.innerHTML += `
-        <tr>
-          <td><strong>${p.nombre}</strong></td>
-          <td>${p.cargo}</td>
-          <td>${p.turno}</td>
-          <td>${p.cursos || '-'}</td>
-          <td>
-            <button class="btn btn-sm" onclick="editarAgente(${p.originalIndex})">✏️</button>
-            <button class="btn btn-sm btn-danger" onclick="eliminarAgente(${p.originalIndex})">🗑️</button>
-          </td>
-        </tr>
-      `;
-    });
-  }
+    const file = input.files[0];
+    const reader = new FileReader();
 
-  function editarAgente(index) {
-    const p = plantelPersonal[index];
-    document.getElementById('agenteEditIndex').value = index;
-    document.getElementById('perNombre').value = p.nombre;
-    document.getElementById('perCargo').value = p.cargo;
-    document.getElementById('perTurno').value = p.turno;
-    document.getElementById('perCursos').value = p.cursos || '';
-    document.querySelectorAll('.check-dia').forEach(cb => {
-      cb.checked = p.dias ? p.dias.includes(parseInt(cb.value)) : true;
-    });
-    document.getElementById('tituloFormAgente').innerText = "✏️ Editando Agente";
-    document.getElementById('btnGuardarAgente').innerText = "Guardar Cambios";
-    document.getElementById('btnCancelarEdicionAgente').style.display = "inline-block";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+    reader.onload = function(e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-  function eliminarAgente(index) {
-    if (confirm("¿Estás seguro de eliminar a este agente?")) {
-      plantelPersonal.splice(index, 1);
-      db.collection("configuracion_ep7").doc("plantel").set({ docentes: plantelPersonal })
-        .then(() => renderizarPlantelPersonal());
-    }
-  }
+        if (jsonRows.length === 0) {
+          alert("El archivo está vacío.");
+          return;
+        }
 
-  function limpiarFormAgente() {
-    document.getElementById('formNuevoAgente').reset();
-    document.getElementById('agenteEditIndex').value = "";
-    document.getElementById('tituloFormAgente').innerText = "+ Guardar Nuevo Agente en Plantel General";
-    document.getElementById('btnGuardarAgente').innerText = "+ Guardar Agente";
-    document.getElementById('btnCancelarEdicionAgente').style.display = "none";
-  }
+        // Buscar la fila de encabezados (AÑO, CUPOF, DOCENTE, etc.)
+        let headerIndex = -1;
+        for (let i = 0; i < jsonRows.length; i++) {
+          const row = jsonRows[i];
+          if (row.some(cell => cell && cell.toString().toUpperCase().includes('CUPOF'))) {
+            headerIndex = i;
+            break;
+          }
+        }
 
-  // PWA Prompt
+        if (headerIndex === -1) {
+          alert("No se encontró la cabecera con la columna 'CUPOF' en el Excel.");
+          return;
+        }
+
+        const headers = jsonRows[headerIndex].map(h => h ? h.toString().trim().toUpperCase() : "");
+        
+        // Mapear índices de columnas
+        const idxAnio = headers.findIndex(h => h.includes('AÑO') || h.includes('CICLO'));
+        const idxCupof = headers.findIndex(h => h.includes('CUPOF'));
+        const idxDocente = headers.findIndex(h => h.includes('DOCENTE'));
+        const idxPid = headers.findIndex(h => h.includes('PID'));
+        const idxDni = headers.findIndex(h => h.includes('DNI') || h.includes('CUIL'));
+        const idxSitRev = headers.findIndex(h => h.includes('SIT') || h.includes('REV'));
+        const idxFnac = headers.findIndex(h => h.includes('NAC'));
+
+        let ultimoAnio = "S/D";
+        let importadosCount = 0;
+
+        for (let i = headerIndex + 1; i < jsonRows.length; i++) {
+          const row = jsonRows[i];
+          if (!row || row.length === 0) continue;
+
+          const valAnio = idxAnio !== -1 ? row[idxAnio] : null;
+          if (valAnio && valAnio.toString().trim() !== "") {
+            ultimoAnio = valAnio.toString().trim();
+          }
+
+          const cupofNum = idxCupof !== -1 ? row[idxCupof] : "";
+          const docenteNom = idxDocente !== -1 ? row[idxDocente] : "";
+          const pidCargo = idxPid !== -1 ? row[idxPid] : "";
+          const dniCuil = idxDni !== -1 ? row[idxDni] : "";
+          const sitRevista = idxSitRev !== -1 ? row[idxSitRev] : "";
+          let fNacimiento = idxFnac !== -1 ? row[idxFnac] : "";
+
+          // Si la fila no tiene docente ni cupof, la saltamos (filas vacías o separadores)
+          if (!docenteNom && !cupofNum) continue;
+
+          // Normalizar fecha si viene en formato serial de Excel
+          if (typeof fNacimiento === 'number') {
+            const fechaD = XLSX.SSF.parse_date_code(fNacimiento);
+            fNacimiento = `${fechaD.y}-${String(fechaD.m).padStart(2, '0')}-${String(fechaD.d).padStart(2, '0')}`;
+          }
+
+          cupofList.push({
+            id: Date.now() + Math.random(),
+            anio: ultimoAnio,
+            numero: cupofNum ? cupofNum.toString().trim() : "",
+            docente: docenteNom ? docenteNom.toString().trim() : "",
+            pid: pidCargo ? pidCargo.toString().trim() : "",
+            dni: dniCuil ? dniCuil.toString().trim() : "",
+            sitRev: sitRevista ? sitRevista.toString().trim() : "",
+            fnac: fNacimiento ? fNacimiento.toString().trim() : ""
+          });
+
+          importadosCount++;
+        }
+
+        guardarColeccionFirebase("cupof", cupofList);
+        renderizarCupof();
+        alert(`🎉 ¡Se importaron y sincronizaron con éxito ${importadosCount} registros de CUPOF en la nube!`);
+        input.value = "";
+
+      } catch (err) {
+        console.error("Error al importar excel CUPOF:", err);
+        alert("Ocurrió un error al procesar el archivo. Verificá el formato.");
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
+  
+  // PWA
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
