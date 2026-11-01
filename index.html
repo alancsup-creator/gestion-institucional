@@ -443,8 +443,17 @@
           <div class="form-group"><label>Docente:</label><input type="text" id="omDocente" required placeholder="Ej: RIZZO JUAN"></div>
           <div class="form-group"><label>PID / Cargo:</label><input type="text" id="omPid" required placeholder="Ej: ZP"></div>
         </div>
-        <div class="grid-2">
+        <div class="grid-3">
           <div class="form-group"><label>Puntaje:</label><input type="number" step="0.01" id="omPuntaje" required placeholder="598.0"></div>
+          <div class="form-group">
+            <label>Estado para Subrogancia:</label>
+            <select id="omEstadoSubrogancia" required>
+              <option value="Activo">🟢 Activo en función</option>
+              <option value="Relevado en la institución">🟡 Relevado en la institución (ej: VD/Director)</option>
+              <option value="Relevado en otra institución">🔴 Relevado en otra institución / SAD</option>
+              <option value="Licenciado / Tareas pasivas">🟠 Licenciado / Tareas pasivas</option>
+            </select>
+          </div>
           <div class="form-group"><label>Observación:</label><input type="text" id="omObservacion" placeholder="Ej: RELEVADO VD-A:29"></div>
         </div>
         <div style="display: flex; gap: 10px;">
@@ -459,11 +468,20 @@
 
       <div class="table-responsive">
         <table>
-          <thead><tr><th>Orden</th><th>Docente</th><th>PID</th><th>Puntaje</th><th>Observación</th><th>Acciones</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Docente</th>
+              <th>PID</th>
+              <th>Puntaje</th>
+              <th>Estado Subrogancia</th>
+              <th>Observación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
           <tbody id="tbodyOrdenMerito"></tbody>
         </table>
       </div>
-    </div>
 
     <!-- Sub-pestaña 2: Automatización Personal a Cargo -->
     <div id="om-subrogancia" class="subtab-content">
@@ -1451,171 +1469,206 @@
 
     reader.readAsArrayBuffer(file);
   }
-  function guardarOrdenMeritoIndividual(e) {
-  e.preventDefault();
-  const editId = document.getElementById('omEditId').value;
-  const item = {
-    id: editId ? parseInt(editId) : Date.now(),
-    orden: parseInt(document.getElementById('omOrden').value),
-    docente: document.getElementById('omDocente').value.trim().toUpperCase(),
-    pid: document.getElementById('omPid').value.trim().toUpperCase(),
-    puntaje: parseFloat(document.getElementById('omPuntaje').value),
-    observacion: document.getElementById('omObservacion').value.trim()
-  };
-  if (editId) {
-    const idx = ordenMeritoList.findIndex(o => o.id === parseInt(editId));
-    if (idx !== -1) ordenMeritoList[idx] = item;
-  } else {
-    ordenMeritoList.push(item);
-  }
-  guardarColeccionFirebase("ordenMerito", ordenMeritoList);
-  limpiarFormOm();
-  renderizarOrdenMerito();
-  alert("✅ Orden de mérito guardado.");
-}
-
-function renderizarOrdenMerito() {
-  ordenMeritoList.sort((a, b) => b.puntaje - a.puntaje);
-  const tbody = document.getElementById('tbodyOrdenMerito');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  const filtro = document.getElementById('buscadorOrdenMerito')?.value.toLowerCase().trim() || "";
-
-  const filtrados = ordenMeritoList.filter(o => !filtro || o.docente.toLowerCase().includes(filtro) || o.pid.toLowerCase().includes(filtro) || o.observacion.toLowerCase().includes(filtro));
-
-  if (filtrados.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b;">No hay registros en el orden de mérito.</td></tr>`;
-    return;
-  }
-
-  filtrados.forEach(o => {
-    tbody.innerHTML += `
-      <tr>
-        <td><strong>#${o.orden || '-'}</strong></td>
-        <td><strong>${o.docente}</strong></td>
-        <td>${o.pid}</td>
-        <td><span style="color:#0284c7; font-weight:bold;">${o.puntaje.toFixed(2)}</span></td>
-        <td>${o.observacion || '-'}</td>
-        <td>
-          <button class="btn btn-sm" onclick="editarOm(${o.id})">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="ordenMeritoList = ordenMeritoList.filter(x=>x.id!==${o.id}); guardarColeccionFirebase('ordenMerito', ordenMeritoList); renderizarOrdenMerito();">🗑️</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-function editarOm(id) {
-  const item = ordenMeritoList.find(o => o.id === id);
-  if (!item) return;
-  document.getElementById('omEditId').value = item.id;
-  document.getElementById('omOrden').value = item.orden;
-  document.getElementById('omDocente').value = item.docente;
-  document.getElementById('omPid').value = item.pid;
-  document.getElementById('omPuntaje').value = item.puntaje;
-  document.getElementById('omObservacion').value = item.observacion;
-  document.getElementById('tituloFormOm').innerText = "✏️ Editando Registro";
-  document.getElementById('btnGuardarOm').innerText = "Guardar Cambios";
-  document.getElementById('btnCancelarOm').style.display = "inline-block";
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function limpiarFormOm() {
-  document.getElementById('formOrdenMerito').reset();
-  document.getElementById('omEditId').value = "";
-  document.getElementById('tituloFormOm').innerText = "+ Agregar Docente al Orden de Mérito";
-  document.getElementById('btnGuardarOm').innerText = "+ Guardar";
-  document.getElementById('btnCancelarOm').style.display = "none";
-}
-
-function importarOrdenMeritoExcel() {
-  const input = document.getElementById('inputExcelOrdenMerito');
-  if (!input.files || input.files.length === 0) return alert("Seleccioná un archivo Excel.");
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, { type: 'array' });
-    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-
-    json.forEach((row, idx) => {
-      const orden = row.ORDEN || row.Orden || (idx + 1);
-      const docente = row.DOCENTE || row.Docente || "";
-      const pid = row.PID || row.Pid || "";
-      const puntaje = parseFloat(row.PUNTAJE || row.Puntaje || 0);
-      const observacion = row.OBSERVACIÓN || row.Observacion || row.OBSERVACION || "";
-
-      if (docente) {
-        ordenMeritoList.push({
-          id: Date.now() + Math.random(),
-          orden: parseInt(orden),
-          docente: docente.toString().trim().toUpperCase(),
-          pid: pid.toString().trim().toUpperCase(),
-          puntaje: isNaN(puntaje) ? 0 : puntaje,
-          observacion: observacion.toString().trim()
-        });
-      }
-    });
-    guardarColeccionFirebase("ordenMerito", ordenMeritoList);
-    renderizarOrdenMerito();
-    alert("✅ Orden de mérito importado masivamente desde Excel.");
-    input.value = "";
-  };
-  reader.readAsArrayBuffer(input.files[0]);
-}
-
-function calcularSubrogancias() {
-  const fecha = document.getElementById('subFecha').value;
-  const turno = document.getElementById('subTurno').value;
-  const resultadoDiv = document.getElementById('resultadoSubrogancia');
-  if (!fecha) return alert("Seleccioná una fecha.");
-
-  const cargosJerarquicos = turno === 'Mañana' ? ['Director', 'Vicedirector', 'Secretario'] : ['Director', 'Vicedirector', 'Prosecretario'];
-
-  const ausentesPorLicencia = licenciasList.filter(l => {
-    return fecha >= l.desde && fecha <= l.hasta;
-  }).map(l => l.docente.toUpperCase());
-
-  const omOrdenado = [...ordenMeritoList].sort((a, b) => b.puntaje - a.puntaje);
-
-  let html = `<h4 style="color: var(--primary); margin-bottom: 10px;">📅 Análisis para el ${fecha.split('-').reverse().join('/')} (${turno})</h4>`;
-
-  cargosJerarquicos.forEach(cargoJerarquico => {
-    const titularObj = plantelPersonal.find(p => p.cargo.toLowerCase() === cargoJerarquico.toLowerCase() && p.turno === turno);
-    const titularNombre = titularObj ? titularObj.nombre.toUpperCase() : `Titular de ${cargoJerarquico}`;
-    const estaAusente = titularObj && ausentesPorLicencia.some(a => a.includes(titularObj.nombre.toUpperCase()));
-
-    html += `<div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 10px;">`;
-    html += `<strong>Cargo: ${cargoJerarquico}</strong> (Titular: ${titularNombre})<br>`;
-
-    if (!estaAusente && titularObj) {
-      html += `<span style="color: var(--success); font-weight: bold;">🟢 Presente: El titular se encuentra en funciones. No requiere subrogancia.</span>`;
+ function guardarOrdenMeritoIndividual(e) {
+    e.preventDefault();
+    const editId = document.getElementById('omEditId').value;
+    const item = {
+      id: editId ? parseInt(editId) : Date.now(),
+      orden: parseInt(document.getElementById('omOrden').value),
+      docente: document.getElementById('omDocente').value.trim().toUpperCase(),
+      pid: document.getElementById('omPid').value.trim().toUpperCase(),
+      puntaje: parseFloat(document.getElementById('omPuntaje').value),
+      estadoSubrogancia: document.getElementById('omEstadoSubrogancia').value,
+      observacion: document.getElementById('omObservacion').value.trim()
+    };
+    if (editId) {
+      const idx = ordenMeritoList.findIndex(o => o.id === parseInt(editId));
+      if (idx !== -1) ordenMeritoList[idx] = item;
     } else {
-      html += `<span style="color: var(--danger); font-weight: bold;">🔴 Ausente / Licencia: Requiere docente a cargo (Subrogancia).</span><br>`;
-
-      const modulosHorarios = turno === 'Mañana' ? ["1° Módulo", "2° Módulo", "3° Módulo", "4° Módulo"] : ["1° Módulo Tarde", "2° Módulo Tarde", "3° Módulo Tarde"];
-
-      html += `<ul style="margin-left: 18px; margin-top: 5px; font-size: 13px;">`;
-      modulosHorarios.forEach(mod => {
-        let subroganteElegido = "Sin docente disponible en orden de mérito";
-        for (let candidato of omOrdenado) {
-          const candidatoNombre = candidato.docente;
-          const candidatoLicencia = ausentesPorLicencia.some(a => a.includes(candidatoNombre));
-          const esTitular = titularObj && candidatoNombre.includes(titularObj.nombre.toUpperCase());
-
-          if (!candidatoLicencia && !esTitular && candidato.puntaje > 0) {
-            subroganteElegido = `${candidato.docente} (Puntaje: ${candidato.puntaje.toFixed(2)} - PID: ${candidato.pid})`;
-            break;
-          }
-        }
-        html += `<li><strong>${mod}:</strong> ➡️ Queda a cargo: <strong>${subroganteElegido}</strong></li>`;
-      });
-      html += `</ul>`;
+      ordenMeritoList.push(item);
     }
-    html += `</div>`;
-  });
+    guardarColeccionFirebase("ordenMerito", ordenMeritoList);
+    limpiarFormOm();
+    renderizarOrdenMerito();
+    alert("✅ Orden de mérito guardado.");
+  }
 
-  resultadoDiv.innerHTML = html;
-}
+  function renderizarOrdenMerito() {
+    ordenMeritoList.sort((a, b) => b.puntaje - a.puntaje);
+    const tbody = document.getElementById('tbodyOrdenMerito');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    const filtro = document.getElementById('buscadorOrdenMerito')?.value.toLowerCase().trim() || "";
+
+    const filtrados = ordenMeritoList.filter(o => !filtro || o.docente.toLowerCase().includes(filtro) || o.pid.toLowerCase().includes(filtro) || (o.observacion && o.observacion.toLowerCase().includes(filtro)));
+
+    if (filtrados.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b;">No hay registros en el orden de mérito.</td></tr>`;
+      return;
+    }
+
+    filtrados.forEach(o => {
+      const estado = o.estadoSubrogancia || "Activo";
+      let badgeColor = "#16a34a"; // verde
+      if (estado.includes("Relevado")) badgeColor = "#d97706"; // naranja/amarillo
+      if (estado.includes("Licenciado")) badgeColor = "#dc2626"; // rojo
+
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>#${o.orden || '-'}</strong></td>
+          <td><strong>${o.docente}</strong></td>
+          <td>${o.pid}</td>
+          <td><span style="color:#0284c7; font-weight:bold;">${o.puntaje.toFixed(2)}</span></td>
+          <td>
+            <select onchange="cambiarEstadoDocenteOm(${o.id}, this.value)" style="padding: 4px 6px; font-size: 11px; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: bold; color: ${badgeColor};">
+              <option value="Activo" ${estado==='Activo'?'selected':''}>🟢 Activo</option>
+              <option value="Relevado en la institución" ${estado==='Relevado en la institución'?'selected':''}>🟡 Relevado en la inst.</option>
+              <option value="Relevado en otra institución" ${estado==='Relevado en otra institución'?'selected':''}>🔴 Relevado en otra inst.</option>
+              <option value="Licenciado / Tareas pasivas" ${estado==='Licenciado / Tareas pasivas'?'selected':''}>🟠 Licenciado / T. Pasivas</option>
+            </select>
+          </td>
+          <td>${o.observacion || '-'}</td>
+          <td>
+            <button class="btn btn-sm" onclick="editarOm(${o.id})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="ordenMeritoList = ordenMeritoList.filter(x=>x.id!==${o.id}); guardarColeccionFirebase('ordenMerito', ordenMeritoList); renderizarOrdenMerito();">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function cambiarEstadoDocenteOm(id, nuevoEstado) {
+    const item = ordenMeritoList.find(o => o.id === id);
+    if (item) {
+      item.estadoSubrogancia = nuevoEstado;
+      guardarColeccionFirebase("ordenMerito", ordenMeritoList);
+      renderizarOrdenMerito();
+    }
+  }
+
+  function editarOm(id) {
+    const item = ordenMeritoList.find(o => o.id === id);
+    if (!item) return;
+    document.getElementById('omEditId').value = item.id;
+    document.getElementById('omOrden').value = item.orden;
+    document.getElementById('omDocente').value = item.docente;
+    document.getElementById('omPid').value = item.pid;
+    document.getElementById('omPuntaje').value = item.puntaje;
+    document.getElementById('omEstadoSubrogancia').value = item.estadoSubrogancia || "Activo";
+    document.getElementById('omObservacion').value = item.observacion || "";
+    document.getElementById('tituloFormOm').innerText = "✏️ Editando Registro";
+    document.getElementById('btnGuardarOm').innerText = "Guardar Cambios";
+    document.getElementById('btnCancelarOm').style.display = "inline-block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function limpiarFormOm() {
+    document.getElementById('formOrdenMerito').reset();
+    document.getElementById('omEditId').value = "";
+    document.getElementById('tituloFormOm').innerText = "+ Agregar Docente al Orden de Mérito";
+    document.getElementById('btnGuardarOm').innerText = "+ Guardar";
+    document.getElementById('btnCancelarOm').style.display = "none";
+  }
+function importarOrdenMeritoExcel() {
+    const input = document.getElementById('inputExcelOrdenMerito');
+    if (!input.files || input.files.length === 0) return alert("Seleccioná un archivo Excel.");
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+      
+      json.forEach((row, idx) => {
+        const orden = row.ORDEN || row.Orden || (idx + 1);
+        const docente = row.DOCENTE || row.Docente || "";
+        const pid = row.PID || row.Pid || "";
+        const puntaje = parseFloat(row.PUNTAJE || row.Puntaje || 0);
+        const observacion = row.OBSERVACIÓN || row.Observacion || row.OBSERVACION || "";
+
+        let estadoInicial = "Activo";
+        const obsUpper = observacion.toString().toUpperCase();
+        if (obsUpper.includes("RELEVADO VD") || obsUpper.includes("RELEVADO D")) {
+          estadoInicial = "Relevado en la institución";
+        } else if (obsUpper.includes("RELEVADO") || obsUpper.includes("SAD")) {
+          estadoInicial = "Relevado en otra institución";
+        }
+
+        if (docente) {
+          ordenMeritoList.push({
+            id: Date.now() + Math.random(),
+            orden: parseInt(orden),
+            docente: docente.toString().trim().toUpperCase(),
+            pid: pid.toString().trim().toUpperCase(),
+            puntaje: isNaN(puntaje) ? 0 : puntaje,
+            estadoSubrogancia: estadoInicial,
+            observacion: observacion.toString().trim()
+          });
+        }
+      });
+      guardarColeccionFirebase("ordenMerito", ordenMeritoList);
+      renderizarOrdenMerito();
+      alert("✅ Orden de mérito importado masivamente desde Excel.");
+      input.value = "";
+    };
+    reader.readAsArrayBuffer(input.files[0]);
+  }
+function calcularSubrogancias() {
+    const fecha = document.getElementById('subFecha').value;
+    const turno = document.getElementById('subTurno').value;
+    const resultadoDiv = document.getElementById('resultadoSubrogancia');
+    if (!fecha) return alert("Seleccioná una fecha.");
+
+    const cargosJerarquicos = turno === 'Mañana' ? ['Director', 'Vicedirector', 'Secretario'] : ['Director', 'Vicedirector', 'Prosecretario'];
+
+    const ausentesPorLicencia = licenciasList.filter(l => {
+      return fecha >= l.desde && fecha <= l.hasta;
+    }).map(l => l.docente.toUpperCase());
+
+    // Filtrar únicamente los docentes cuyo estado sea "Activo"
+    const omDisponibles = ordenMeritoList.filter(o => {
+      const est = o.estadoSubrogancia || "Activo";
+      return est === "Activo";
+    }).sort((a, b) => b.puntaje - a.puntaje);
+
+    let html = `<h4 style="color: var(--primary); margin-bottom: 10px;">📅 Análisis de Subrogancia para el ${fecha.split('-').reverse().join('/')} (${turno})</h4>`;
+
+    cargosJerarquicos.forEach(cargoJerarquico => {
+      const titularObj = plantelPersonal.find(p => p.cargo.toLowerCase() === cargoJerarquico.toLowerCase() && p.turno === turno);
+      const titularNombre = titularObj ? titularObj.nombre.toUpperCase() : `Titular de ${cargoJerarquico}`;
+      const estaAusente = titularObj && ausentesPorLicencia.some(a => a.includes(titularObj.nombre.toUpperCase()));
+
+      html += `<div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 10px;">`;
+      html += `<strong>Cargo: ${cargoJerarquico}</strong> (Titular: ${titularNombre})<br>`;
+
+      if (!estaAusente && titularObj) {
+        html += `<span style="color: var(--success); font-weight: bold;">🟢 Presente: El titular se encuentra en funciones. No requiere subrogancia.</span>`;
+      } else {
+        html += `<span style="color: var(--danger); font-weight: bold;">🔴 Ausente / Licencia: Requiere docente a cargo (Subrogancia).</span><br>`;
+        
+        const modulosHorarios = turno === 'Mañana' ? ["1° Módulo", "2° Módulo", "3° Módulo", "4° Módulo"] : ["1° Módulo Tarde", "2° Módulo Tarde", "3° Módulo Tarde"];
+        
+        html += `<ul style="margin-left: 18px; margin-top: 5px; font-size: 13px;">`;
+        modulosHorarios.forEach(mod => {
+          let subroganteElegido = "Sin docente disponible activo en orden de mérito";
+          for (let candidato of omDisponibles) {
+            const candidatoNombre = candidato.docente;
+            const candidatoLicencia = ausentesPorLicencia.some(a => a.includes(candidatoNombre));
+            const esTitular = titularObj && candidatoNombre.includes(titularObj.nombre.toUpperCase());
+            
+            if (!candidatoLicencia && !esTitular && candidato.puntaje > 0) {
+              subroganteElegido = `${candidato.docente} (Puntaje: ${candidato.puntaje.toFixed(2)} - PID: ${candidato.pid})`;
+              break;
+            }
+          }
+          html += `<li><strong>${mod}:</strong> ➡️ Queda a cargo: <strong>${subroganteElegido}</strong></li>`;
+        });
+        html += `</ul>`;
+      }
+      html += `</div>`;
+    });
+
+    resultadoDiv.innerHTML = html;
+  }
   
   // PWA
   let deferredPrompt;
